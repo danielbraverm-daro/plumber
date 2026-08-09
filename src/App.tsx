@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   equipment,
   followUps,
@@ -13,6 +13,9 @@ import {
 } from './data'
 
 type View = 'dashboard' | 'calls' | 'invoices' | 'followups' | 'equipment' | 'phonelog'
+type Theme = 'clean' | 'vivid'
+
+const THEME_KEY = 'tzinor-theme'
 
 const navItems: { id: View; label: string; count?: number }[] = [
   { id: 'dashboard', label: 'לוח בקרה' },
@@ -43,9 +46,9 @@ function BrandMark() {
       <svg viewBox="0 0 28 28" fill="none">
         <path
           d="M5 15c0-4.4 3.6-8 8-8h2v3h-2a5 5 0 100 10h5a5 5 0 004.2-7.7l2.2-2.1A8 8 0 0120 23h-5c-5.5 0-10-4.5-10-8z"
-          fill="#0B3A4A"
+          fill="var(--brand-icon)"
         />
-        <circle cx="20" cy="7" r="3" fill="#4DB6C8" />
+        <circle cx="20" cy="7" r="3" fill="var(--brand-dot)" />
       </svg>
     </div>
   )
@@ -568,6 +571,15 @@ function PhoneLogView() {
 
 export default function App() {
   const [view, setView] = useState<View>('dashboard')
+  const [theme, setTheme] = useState<Theme>(() => {
+    const saved = localStorage.getItem(THEME_KEY)
+    return saved === 'vivid' || saved === 'clean' ? saved : 'clean'
+  })
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem(THEME_KEY, theme)
+  }, [theme])
 
   return (
     <div className="app">
@@ -578,6 +590,23 @@ export default function App() {
             <div className="brand-name">צינור</div>
             <div className="brand-tag">CRM לשרברבים</div>
           </div>
+        </div>
+
+        <div className="theme-switch" role="group" aria-label="בחירת עיצוב">
+          <button
+            type="button"
+            className={`theme-btn ${theme === 'clean' ? 'active' : ''}`}
+            onClick={() => setTheme('clean')}
+          >
+            נקי
+          </button>
+          <button
+            type="button"
+            className={`theme-btn ${theme === 'vivid' ? 'active' : ''}`}
+            onClick={() => setTheme('vivid')}
+          >
+            צבעוני
+          </button>
         </div>
 
         <nav className="nav" aria-label="תפריט ראשי">
